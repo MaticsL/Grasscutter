@@ -13,16 +13,16 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.gson.reflect.TypeToken;
 
 import emu.grasscutter.GameConstants;
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.command.Command;
+import emu.grasscutter.command.CommandHandler;
+import emu.grasscutter.command.CommandMap;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.ResourceLoader;
 import emu.grasscutter.data.def.AvatarData;
@@ -30,6 +30,8 @@ import emu.grasscutter.data.def.ItemData;
 import emu.grasscutter.data.def.MonsterData;
 import emu.grasscutter.data.def.SceneData;
 import emu.grasscutter.utils.Utils;
+
+import static emu.grasscutter.utils.Language.translate;
 
 public final class Tools {
 	public static void createGmHandbook() throws Exception {
@@ -64,25 +66,26 @@ public final class Tools {
 		if (availableLangList.size() == 1) {
 			return availableLangList.get(0).toUpperCase();
 		}
-		System.out.println("The following languages mappings are available, please select one: [default: EN]");
-		String groupedLangList = "> ";
+		String stagedMessage = "";
+		stagedMessage += "The following languages mappings are available, please select one: [default: EN]\n";
+		String groupedLangList = ">\t";
 		int groupedLangCount = 0;
 		String input = "";
 		for (String availableLanguage: availableLangList){
 			groupedLangCount++;
 			groupedLangList = groupedLangList + "" + availableLanguage + "\t";
 			if (groupedLangCount == 6) {
-				System.out.println(groupedLangList);
+				stagedMessage += groupedLangList + "\n";
 				groupedLangCount = 0;
-				groupedLangList = "> ";
+				groupedLangList = ">\t";
 			}
 		}
 		if (groupedLangCount > 0) {
-			System.out.println(groupedLangList);
+			stagedMessage += groupedLangList + "\n";
 		}
-		System.out.print("\nYour choice:[EN] ");
-
-		input = new BufferedReader(new InputStreamReader(System.in)).readLine();
+		stagedMessage += "\nYour choice:[EN] ";
+		
+		input = Grasscutter.getConsole().readLine(stagedMessage);
 		if (availableLangList.contains(input.toLowerCase())) {
 			return input.toUpperCase();
 		}
@@ -110,7 +113,20 @@ final class ToolsWithLanguageOption {
 			   
 			writer.println("// Grasscutter " + GameConstants.VERSION + " GM Handbook");
 			writer.println("// Created " + dtf.format(now) + System.lineSeparator() + System.lineSeparator());
-			
+
+			CommandMap cmdMap = new CommandMap(true);
+			List<Command> cmdList = new ArrayList<>(cmdMap.getAnnotationsAsList());
+
+			writer.println("// Commands");
+			for (Command cmd : cmdList) {
+				String cmdName = cmd.label();
+				while (cmdName.length() <= 15) {
+					cmdName = " " + cmdName;
+				}
+				writer.println(cmdName + " : " + translate(cmd.description()));
+			}
+			writer.println();
+
 			list = new ArrayList<>(GameData.getAvatarDataMap().keySet());
 			Collections.sort(list); 
 			 
@@ -249,6 +265,6 @@ final class ToolsWithLanguageOption {
 			writer.println("}\n}");
 		}
 		
-		Grasscutter.getLogger().info("Mappings generated!");
+		Grasscutter.getLogger().info("Mappings generated to " + location + " !");
 	}
 }
