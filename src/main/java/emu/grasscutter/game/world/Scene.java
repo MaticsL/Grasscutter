@@ -406,10 +406,9 @@ public class Scene {
 	public void onTick() {
 		if (this.getScriptManager().isInit()) {
 			this.checkBlocks();
-		} else {
-			// TEMPORARY
-			this.checkSpawns();
 		}
+			// TEMPORARY
+		this.checkSpawns();
 		
 		// Triggers
 		this.getScriptManager().onTick();
