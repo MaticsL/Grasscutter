@@ -69,7 +69,7 @@ public class SceneScriptManager {
 		this.scriptMonsterSpawnService = new ScriptMonsterSpawnService(this);
 
 		// TEMPORARY
-		if (this.getScene().getId() < 10) {
+		if (this.getScene().getId() < 3) {
 			return;
 		}
 		
@@ -406,7 +406,7 @@ public class SceneScriptManager {
 				ret = safetyCall(trigger.condition, condition, args);
 			}
 			
-			if (ret.isboolean() && ret.checkboolean()) {
+			if (ret.isboolean() && ret.checkboolean() && trigger.action != null && !trigger.action.isEmpty()) {
 				ScriptLib.logger.trace("Call Action Trigger {}", trigger);
 				LuaValue action = (LuaValue) this.getBindings().get(trigger.action);
 				// TODO impl the param of SetGroupVariableValueByGroup

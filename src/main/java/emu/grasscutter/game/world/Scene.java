@@ -511,8 +511,8 @@ public class Scene {
 		
 		for (SceneBlock block : visible) {
 			if (!this.getLoadedBlocks().contains(block)) {
-				this.onLoadBlock(block);
 				this.getLoadedBlocks().add(block);
+				this.onLoadBlock(block);
 			}
 		}
 	}
